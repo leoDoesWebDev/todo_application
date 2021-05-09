@@ -18,7 +18,7 @@ class CreateTodoTable extends Migration
             $table->string('task');
             $table->string('description')->nullable();
             $table->date('complete_by');
-            $table->integer('status');
+            $table->integer('status')->default(0);
             $table->timestamps();
         });
     }
