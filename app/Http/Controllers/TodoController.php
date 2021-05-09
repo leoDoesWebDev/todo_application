@@ -25,6 +25,12 @@ class TodoController extends Controller {
     }
 
 
+    //
+    public function show($id)
+    {
+        return Todo::findOrFail($id);
+    }
+
     protected function validateEntry()
     {
         return request()->validate([
