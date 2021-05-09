@@ -8,14 +8,14 @@
                 <button type="button" id="add_entry" class="btn btn-primary add mb-3">
                     Add Task
                 </button>
-                <table id="todo_table" class="table">
+                <table id="todo_table" class="table" style="width: 1068px;">
                     <thead>
                     <tr>
-                        <th scope="col">Task</th>
-                        <th scope="col">Description</th>
-                        <th scope="col">Complete By</th>
-                        <th scope="col">Status</th>
-                        <th scope="col">Actions</th>
+                        <th scope="col" style="width: 169px;">Task</th>
+                        <th scope="col" style="width: 413px;">Description</th>
+                        <th scope="col" style="width: 94px;">Complete By</th>
+                        <th scope="col" style="width: 49px;">Status</th>
+                        <th scope="col" style="width: 133px;">Actions</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -132,6 +132,29 @@
                 }
             });
 
+            $('#todo_table').on('change', '.task-status', function (e) {
+                let status = 0;
+                if ($(this).prop('checked')) {
+                    status = 1;
+                }
+                e.preventDefault();
+                let id = $(this).attr('data-id');
+                $.ajax({
+                    type: "POST",
+                    url: "/api/task-status/" + id,
+                    data: {
+                        status: status,
+                        _method: "PATCH"
+                    }
+                }).done(function (data) {
+                    reloadTodoTable();
+                    $('#entry_modal').modal('hide')
+                    toastr.success('Task successfully updated')
+                }).fail(function (data) {
+                    toastr.error('Something went wrong!')
+                });
+            });
+
             $('#update_todo').on('click', function (e) {
                 e.preventDefault()
                 let formData = new FormData($('#todo_form')[0]);
@@ -148,7 +171,7 @@
                     reloadTodoTable();
                     $('#entry_modal').modal('hide')
                     toastr.success('Task successfully updated')
-                }).fail(function (data){
+                }).fail(function (data) {
                     displayValidationErrors(data.responseJSON.errors);
                 });
             });
@@ -164,7 +187,7 @@
                     reloadTodoTable();
                     $('#entry_modal').modal('hide')
                     toastr.success('Task successfully removed')
-                }).fail(function (data){
+                }).fail(function (data) {
                     toastr.error('Something went wrong!')
                 });
             });
