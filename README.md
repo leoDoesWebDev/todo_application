@@ -1,5 +1,3 @@
-After Pull
-0. CD todo_application
 1. Run Composer install
 2. Run npm install
 3. Run npm run dev
