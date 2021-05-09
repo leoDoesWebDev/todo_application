@@ -37,6 +37,18 @@ class TodoController extends Controller {
         $todo->delete();
     }
 
+    //
+    public function update($id)
+    {
+        $this->validateEntry();
+        $todo = Todo::findOrFail($id);
+        $todo->task = request('task');
+        $todo->description = request('description');
+        $todo->complete_by = request('complete_by');
+        $todo->save();
+    }
+
+
     protected function validateEntry()
     {
         return request()->validate([

@@ -24,3 +24,4 @@ Route::get('/tasks', [TodoController::class, 'index']);
 Route::post('/task', [TodoController::class, 'store']);
 Route::get('/task/{id}', [TodoController::class, 'show']);
 Route::delete('/task/{id}', [TodoController::class, 'destroy']);
+Route::patch('/task/{id}', [TodoController::class, 'update']);
