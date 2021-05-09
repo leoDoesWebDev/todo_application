@@ -10,3 +10,12 @@
         </div>
     </div>
 @endsection
+@section('javascript')
+    <script>
+        console.log('JS yield working')
+
+        $(function (e){
+            console.log('jquery  working');
+        })
+    </script>
+@endsection
