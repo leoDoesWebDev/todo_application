@@ -28,26 +28,13 @@
 
         $(function (e){
             console.log('jquery  working');
-
-            let dataSet = [
-                {
-                    'task': 'Wash clothes',
-                    'description': 'Wash mixed load at 30 degrees for 1 hour',
-                    'complete_by': '20/08/2021',
-                    'status': '0',
-                    'id': '1',
-                },
-                {
-                    'task': 'Hair Cut',
-                    'description': 'At Jimmy\'s barbers',
-                    'complete_by': '21/08/2021',
-                    'status': '0',
-                    'id': '2',
-                },
-            ];
+            
 
             let todoTable = $('#todo_table').DataTable({
-                data: dataSet,
+                "ajax": {
+                    "url": "/api/items",
+                    "dataSrc": ""
+                },
                 "columns": [
                     {"data": "task"},
                     {"data": "description"},
