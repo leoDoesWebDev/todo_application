@@ -87,7 +87,7 @@
                        }
 
                        if (type === 'display') {
-                           return '<input id="task_' + data.id + '" type="checkbox" class="task-status" data-id="' + data.id + '" ' + checked + '>';
+                           return '<input id="task_' + row.id + '" type="checkbox" class="task-status" data-id="' + row.id + '" ' + checked + '>';
                        } else {
                            return data;
                        }
