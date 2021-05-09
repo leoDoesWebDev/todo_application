@@ -6,7 +6,7 @@
             <div class="card-header">Todo List</div>
             <div class="card-body">
                 <button type="button" id="add_entry" class="btn btn-primary add mb-3">
-                    Add New Entry
+                    Add Task
                 </button>
                 <table id="todo_table" class="table">
                     <thead>
@@ -101,7 +101,7 @@
                         let html = '';
                         html += '<button type="button" class="btn btn-info text-white view mr-2" data-id="' + data + '" title="View Entry"><i class="fa fa-eye"></i></button>';
                         html += '<button type="button" class="btn btn-secondary text-white edit mr-2" data-id="' + data + '" title="Edit Entry"><i class="fa fa-edit"></i></button>';
-                        html += '<button type="button" class="btn btn-danger text-white delete mr-2" data-id="' + data + '" title="De;ete Entry"><i class="fa fa-trash"></i></button>';
+                        html += '<button type="button" class="btn btn-danger text-white delete mr-2" data-id="' + data + '" title="Delete Entry"><i class="fa fa-trash"></i></button>';
 
                         if (type === 'display') {
                             return html;
@@ -132,6 +132,22 @@
                 }
             });
 
+            $('#delete_todo').on('click', function (e) {
+                e.preventDefault();
+                let id = $(this).attr('data-id');
+                $.ajax({
+                    type: "POST",
+                    url: "/api/task/" + id,
+                    data: {_method: "DELETE"}
+                }).done(function (data) {
+                    reloadTodoTable();
+                    $('#entry_modal').modal('hide')
+                    toastr.success('Task successfully removed')
+                }).fail(function (data){
+                    toastr.error('Something went wrong!')
+                });
+            });
+
 
             $('#todo_table').on('click', '.view', function (e) {
                 $('#entry_modal .form-control').attr('disabled', 'disabled');
@@ -143,13 +159,13 @@
                 let id = $(this).attr('data-id');
                 $('#entry_modal').modal('show')
                 populateForm(id);
-                $('#update_todo').show();
+                $('#update_todo').show().attr('data-id', id);
                 $('#entry_modal h5').text('Edit Task')
             }).on('click', '.delete', function (e) {
                 let id = $(this).attr('data-id');
                 $('#entry_modal').modal('show')
                 populateForm(id);
-                $('#delete_todo').show();
+                $('#delete_todo').show().attr('data-id', id);
                 $('#entry_modal .form-control').attr('disabled', 'disabled');
                 $('#entry_modal h5').text('Are you sure you would like to delete this task?')
             })
