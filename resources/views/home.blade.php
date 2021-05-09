@@ -5,17 +5,17 @@
         <div class="card">
             <div class="card-header">Todo List</div>
             <div class="card-body">
-                <button type="button" id="add_entry" class="btn btn-primary add mb-3">
+                <button type="button" id="add_entry" class="btn btn-primary add mb-3 position-absolute" style="z-index: 2">
                     Add Task
                 </button>
                 <table id="todo_table" class="table" style="width: 1068px;">
                     <thead>
                     <tr>
-                        <th scope="col" style="width: 169px;">Task</th>
-                        <th scope="col" style="width: 413px;">Description</th>
-                        <th scope="col" style="width: 94px;">Complete By</th>
-                        <th scope="col" style="width: 49px;">Status</th>
-                        <th scope="col" style="width: 133px;">Actions</th>
+                        <th scope="col">Task</th>
+                        <th scope="col">Description</th>
+                        <th scope="col">Complete By</th>
+                        <th scope="col" style="width:50px">Status</th>
+                        <th scope="col">Actions</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -67,48 +67,58 @@
         const today = moment().format('Y-MM-DD');
 
         let todoTable = $('#todo_table').DataTable({
-            responsive: true,
+            paginate: false,
+            rowId: function (a) {
+                return 'task_' + a.id;
+            },
+            "order": [[3, "asc"], [2, "asc"]],
             columnDefs: [
                 {
-                    targets: 1,
-                    className: "text-truncate"
+                    targets: [0, 1],
+                    className: "text-truncate",
+                    render: function (data, type, row, meta) {
+                        return (row.status == '1') ? '<del>' + data + '</del>' : data;
+                    }
                 },
                 {
                     targets: 2,
-                    className: "text-center"
+                    className: "text-center",
+                    render: function (data, type, row, meta) {
+                        let date = moment(data, 'Y-MM-DD').format('DD/MM/Y');
+                        if(type === 'display'){
+                            return (row.status == '1') ? '<del>' + date + '</del>' : date;
+                        }else{
+                            return  data;
+                        }
+                    }
                 },
                 {
                     targets: 3,
                     className: "text-center",
+                    "searchable": false,
                     render: function (data, type, row, meta) {
-                        let checked = '';
-
+                        let html, checked = '';
                         if (data == '1') {
                             checked = 'checked="checked"';
                         }
 
-                        if (type === 'display') {
-                            return '<input id="task_' + row.id + '" type="checkbox" class="task-status" data-id="' + row.id + '" ' + checked + '>';
-                        } else {
-                            return data;
-                        }
+                        html = '<input id="task_' + row.id + '" type="checkbox" class="task-status" data-id="' + row.id + '" ' + checked + '>';
+
+                        return (type === 'display') ? html : data;
                     }
                 },
                 {
                     targets: 4,
                     className: "text-right",
+                    "searchable": false,
+                    sortable: false,
                     render: function (data, type, row, meta) {
                         let html = '';
                         html += '<button type="button" class="btn btn-info text-white view mr-2" data-id="' + data + '" title="View Entry"><i class="fa fa-eye"></i></button>';
                         html += '<button type="button" class="btn btn-secondary text-white edit mr-2" data-id="' + data + '" title="Edit Entry"><i class="fa fa-edit"></i></button>';
                         html += '<button type="button" class="btn btn-danger text-white delete mr-2" data-id="' + data + '" title="Delete Entry"><i class="fa fa-trash"></i></button>';
 
-                        if (type === 'display') {
-                            return html;
-                        } else {
-                            return data;
-                        }
-
+                        return (type === 'display') ? html : data;
                     }
                 }
             ],
