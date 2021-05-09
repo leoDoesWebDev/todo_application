@@ -13,7 +13,7 @@
                     <tr>
                         <th scope="col">Task</th>
                         <th scope="col">Description</th>
-                        <th scope="col" >Complete By</th>
+                        <th scope="col">Complete By</th>
                         <th scope="col">Status</th>
                         <th scope="col">Actions</th>
                     </tr>
@@ -53,8 +53,9 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" id="store_todo" class="btn btn-primary">Submit</button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" id="store_todo" class="btn btn-primary submit-button" style="display: none">Submit</button>
+                    <button type="button" id="delete_todo" class="btn btn-danger submit-button" style="display: none">Delete</button>
+                    <button type="button" id="update_todo" class="btn btn-info text-white submit-button" style="display: none">Update</button>
                 </div>
             </div>
         </div>
@@ -63,89 +64,113 @@
 @endsection
 @section('javascript')
     <script>
-       const today = moment().format('Y-MM-DD');
+        const today = moment().format('Y-MM-DD');
 
-       let todoTable = $('#todo_table').DataTable({
-           responsive: true,
-           columnDefs: [
-               {
-                   targets: 1,
-                   className: "text-truncate"
-               },
-               {
-                   targets: 2,
-                   className: "text-center"
-               },
-               {
-                   targets: 3,
-                   className: "text-center",
-                   render: function (data, type, row, meta) {
-                       let checked = '';
+        let todoTable = $('#todo_table').DataTable({
+            responsive: true,
+            columnDefs: [
+                {
+                    targets: 1,
+                    className: "text-truncate"
+                },
+                {
+                    targets: 2,
+                    className: "text-center"
+                },
+                {
+                    targets: 3,
+                    className: "text-center",
+                    render: function (data, type, row, meta) {
+                        let checked = '';
 
-                       if (data == '1') {
-                           checked = 'checked="checked"';
-                       }
+                        if (data == '1') {
+                            checked = 'checked="checked"';
+                        }
 
-                       if (type === 'display') {
-                           return '<input id="task_' + row.id + '" type="checkbox" class="task-status" data-id="' + row.id + '" ' + checked + '>';
-                       } else {
-                           return data;
-                       }
-                   }
-               },
-               {
-                   targets: 4,
-                   className: "text-right",
-                   render: function (data, type, row, meta) {
-                       let html = '';
-                       html += '<button type="button" class="btn btn-info text-white action-button edit mr-2" data-id="' + data.id + '" title="Edit Entry"><i class="fa fa-eye"></i></button>';
-                       html += '<button type="button" class="btn btn-secondary text-white action-button view mr-2" data-id="' + data.id + '" title="Edit Entry"><i class="fa fa-edit"></i></button>';
-                       html += '<button type="button" class="btn btn-danger text-white action-button delete mr-2" data-id="' + data.id + '" title="Edit Entry"><i class="fa fa-trash"></i></button>';
+                        if (type === 'display') {
+                            return '<input id="task_' + row.id + '" type="checkbox" class="task-status" data-id="' + row.id + '" ' + checked + '>';
+                        } else {
+                            return data;
+                        }
+                    }
+                },
+                {
+                    targets: 4,
+                    className: "text-right",
+                    render: function (data, type, row, meta) {
+                        let html = '';
+                        html += '<button type="button" class="btn btn-info text-white view mr-2" data-id="' + data + '" title="View Entry"><i class="fa fa-eye"></i></button>';
+                        html += '<button type="button" class="btn btn-secondary text-white edit mr-2" data-id="' + data + '" title="Edit Entry"><i class="fa fa-edit"></i></button>';
+                        html += '<button type="button" class="btn btn-danger text-white delete mr-2" data-id="' + data + '" title="De;ete Entry"><i class="fa fa-trash"></i></button>';
 
-                       if (type === 'display') {
-                           return html;
-                       } else {
-                           return data;
-                       }
+                        if (type === 'display') {
+                            return html;
+                        } else {
+                            return data;
+                        }
 
-                   }
-               }
-           ],
-           "ajax": {
-               "url": "/api/tasks",
-               "dataSrc": ""
-           },
-           "columns": [
-               {"data": "task"},
-               {"data": "description"},
-               {"data": "complete_by"},
-               {"data": "status"},
-               {"data": "id"},
-           ]
-       });
+                    }
+                }
+            ],
+            "ajax": {
+                "url": "/api/tasks",
+                "dataSrc": ""
+            },
+            "columns": [
+                {"data": "task"},
+                {"data": "description"},
+                {"data": "complete_by"},
+                {"data": "status"},
+                {"data": "id"},
+            ]
+        });
 
-        $(function (e){
+        $(function (e) {
             $.ajaxSetup({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 }
             });
 
-            $('#add_entry').on('click', function (e){
+
+            $('#todo_table').on('click', '.view', function (e) {
+                $('#entry_modal .form-control').attr('disabled', 'disabled');
+                let id = $(this).attr('data-id');
+                $('#entry_modal').modal('show')
+                populateForm(id);
+                $('#entry_modal h5').text('Viewing Task')
+            }).on('click', '.edit', function (e) {
+                let id = $(this).attr('data-id');
+                $('#entry_modal').modal('show')
+                populateForm(id);
+                $('#update_todo').show();
+                $('#entry_modal h5').text('Edit Task')
+            }).on('click', '.delete', function (e) {
+                let id = $(this).attr('data-id');
+                $('#entry_modal').modal('show')
+                populateForm(id);
+                $('#delete_todo').show();
+                $('#entry_modal .form-control').attr('disabled', 'disabled');
+                $('#entry_modal h5').text('Are you sure you would like to delete this task?')
+            })
+
+            $('#add_entry').on('click', function (e) {
                 $('#entry_modal').modal('show')
                 $('#entry_modal h5').text('Add Task')
+                $('#store_todo').show();
             });
 
             $('#entry_modal').on('hide.bs.modal', function () {
-               $('#entry_modal .form-control').val('');
+                $('#entry_modal .form-control').val('').removeAttr('disabled');
                 $('#complete_by').val(today);
                 hideValidationErrors();
+                $('.submit-button').hide();
             })
 
             //complete by pre-populate and validation
             $('#complete_by').val(today).attr('min', today);
 
-            $('#store_todo').on('click', function (e){
+            $('#store_todo').on('click', function (e) {
                 e.preventDefault();
                 let formData = new FormData($('#todo_form')[0]);
                 $.ajax({
@@ -169,23 +194,31 @@
             });
         })
 
-       function hideValidationErrors() {
-           $('#validation_errors').hide().html("");
-           $('.form-control').removeClass('is-invalid');
-       }
+        function hideValidationErrors() {
+            $('#validation_errors').hide().html("");
+            $('.form-control').removeClass('is-invalid');
+        }
 
-       function displayValidationErrors(errors){
-           hideValidationErrors();
-           $('#validation_errors').show();
-           $.each(errors, function (key, value) {
-               $('#validation_errors').append('<p class="card-text">' + value[0] + '</p>')
-               $('#' + key).addClass('is-invalid');
-           });
-       }
+        function displayValidationErrors(errors) {
+            hideValidationErrors();
+            $('#validation_errors').show();
+            $.each(errors, function (key, value) {
+                $('#validation_errors').append('<p class="card-text">' + value[0] + '</p>')
+                $('#' + key).addClass('is-invalid');
+            });
+        }
 
-       function reloadTodoTable() {
-           todoTable.ajax.url("/api/tasks").load();
-       }
+        function reloadTodoTable() {
+            todoTable.ajax.url("/api/tasks").load();
+        }
+
+        function populateForm(id) {
+            $.get('/api/task/' + id, function (data) {
+                $.each(data, function (key, value) {
+                    $('#' + key).val(value);
+                });
+            });
+        }
 
     </script>
 @endsection
