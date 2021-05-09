@@ -132,6 +132,27 @@
                 }
             });
 
+            $('#update_todo').on('click', function (e) {
+                e.preventDefault()
+                let formData = new FormData($('#todo_form')[0]);
+                formData.append('_method', 'PATCH');
+                let id = $(this).attr('data-id');
+                $.ajax({
+                    type: "POST",
+                    url: "/api/task/" + id,
+                    data: formData,
+                    cache: false,
+                    contentType: false,
+                    processData: false
+                }).done(function (data) {
+                    reloadTodoTable();
+                    $('#entry_modal').modal('hide')
+                    toastr.success('Task successfully updated')
+                }).fail(function (data){
+                    displayValidationErrors(data.responseJSON.errors);
+                });
+            });
+
             $('#delete_todo').on('click', function (e) {
                 e.preventDefault();
                 let id = $(this).attr('data-id');
@@ -199,6 +220,7 @@
                 }).done(function (data) {
                     reloadTodoTable();
                     $('#entry_modal').modal('hide')
+                    toastr.success('Task successfully added')
                 }).fail(function (data) {
                     displayValidationErrors(data.responseJSON.errors);
                 });
