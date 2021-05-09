@@ -49,6 +49,8 @@
                             <input type="date" class="form-control" id="complete_by" name="complete_by" value="2018-07-22" min="2018-01-01">
                         </div>
                     </form>
+                    <div id="validation_errors" class="alert alert-danger" role="alert" style="display: none">
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" id="store_todo" class="btn btn-primary">Submit</button>
@@ -84,14 +86,15 @@
                 }
             });
 
-
             $('#add_entry').on('click', function (e){
                 $('#entry_modal').modal('show')
+                $('#entry_modal h5').text('Add Task')
             });
 
             $('#entry_modal').on('hide.bs.modal', function () {
                $('#entry_modal .form-control').val('');
-                $('#complete_by').val(today)
+                $('#complete_by').val(today);
+                hideValidationErrors();
             })
 
             //complete by pre-populate and validation
@@ -111,10 +114,29 @@
                     reloadTodoTable();
                     $('#entry_modal').modal('hide')
                 }).fail(function (data) {
-                    console.log('fail');
+                    displayValidationErrors(data.responseJSON.errors);
                 });
             });
+
+            //remove validation error on input on focus
+            $('.form-control').on('focus', function () {
+                $(this).removeClass('is-invalid');
+            });
         })
+
+       function hideValidationErrors() {
+           $('#validation_errors').hide().html("");
+           $('.form-control').removeClass('is-invalid');
+       }
+
+       function displayValidationErrors(errors){
+           hideValidationErrors();
+           $('#validation_errors').show();
+           $.each(errors, function (key, value) {
+               $('#validation_errors').append('<p class="card-text">' + value[0] + '</p>')
+               $('#' + key).addClass('is-invalid');
+           });
+       }
 
        function reloadTodoTable() {
            todoTable.ajax.url("/api/tasks").load();
