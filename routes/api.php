@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\TodoController;
+use App\Http\Controllers\TodoStatusController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -25,3 +26,5 @@ Route::post('/task', [TodoController::class, 'store']);
 Route::get('/task/{id}', [TodoController::class, 'show']);
 Route::delete('/task/{id}', [TodoController::class, 'destroy']);
 Route::patch('/task/{id}', [TodoController::class, 'update']);
+
+Route::patch('/task-status/{id}', [TodoStatusController::class, 'update']);
