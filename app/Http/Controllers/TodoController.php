@@ -24,11 +24,17 @@ class TodoController extends Controller {
         ]);
     }
 
-
     //
     public function show($id)
     {
         return Todo::findOrFail($id);
+    }
+
+    //
+    public function destroy($id)
+    {
+        $todo = Todo::findOrFail($id);
+        $todo->delete();
     }
 
     protected function validateEntry()

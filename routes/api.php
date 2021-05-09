@@ -23,3 +23,4 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::get('/tasks', [TodoController::class, 'index']);
 Route::post('/task', [TodoController::class, 'store']);
 Route::get('/task/{id}', [TodoController::class, 'show']);
+Route::delete('/task/{id}', [TodoController::class, 'destroy']);
