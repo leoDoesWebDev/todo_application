@@ -5,6 +5,9 @@
         <div class="card">
             <div class="card-header">Todo List</div>
             <div class="card-body">
+                <button type="button" id="add_entry" class="btn btn-primary add mb-3">
+                    Add New Entry
+                </button>
                 <table id="todo_table" class="table">
                     <thead>
                     <tr>
@@ -21,28 +24,101 @@
             </div>
         </div>
     </div>
+
+    <div id="entry_modal" class="modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Task</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="todo_form">
+                        <div class="form-group">
+                            <label for="task">Task</label>
+                            <input type="text" class="form-control" name="task" id="task">
+                        </div>
+                        <div class="form-group">
+                            <label for="description">Further Details</label>
+                            <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="complete_by">Complete By</label>
+                            <input type="date" class="form-control" id="complete_by" name="complete_by" value="2018-07-22" min="2018-01-01">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="store_todo" class="btn btn-primary">Submit</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 @endsection
 @section('javascript')
     <script>
-        console.log('JS yield working')
+       const today = moment().format('Y-MM-DD');
+
+       let todoTable = $('#todo_table').DataTable({
+           "ajax": {
+               "url": "/api/tasks",
+               "dataSrc": ""
+           },
+           "columns": [
+               {"data": "task"},
+               {"data": "description"},
+               {"data": "complete_by"},
+               {"data": "status"},
+               {"data": "id"},
+           ]
+       });
 
         $(function (e){
-            console.log('jquery  working');
-            
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
 
-            let todoTable = $('#todo_table').DataTable({
-                "ajax": {
-                    "url": "/api/items",
-                    "dataSrc": ""
-                },
-                "columns": [
-                    {"data": "task"},
-                    {"data": "description"},
-                    {"data": "complete_by"},
-                    {"data": "status"},
-                    {"data": "id"},
-                ]
+
+            $('#add_entry').on('click', function (e){
+                $('#entry_modal').modal('show')
+            });
+
+            $('#entry_modal').on('hide.bs.modal', function () {
+               $('#entry_modal .form-control').val('');
+                $('#complete_by').val(today)
+            })
+
+            //complete by pre-populate and validation
+            $('#complete_by').val(today).attr('min', today);
+
+            $('#store_todo').on('click', function (e){
+                e.preventDefault();
+                let formData = new FormData($('#todo_form')[0]);
+                $.ajax({
+                    url: "/api/task",
+                    type: 'POST',
+                    data: formData,
+                    cache: false,
+                    contentType: false,
+                    processData: false
+                }).done(function (data) {
+                    reloadTodoTable();
+                    $('#entry_modal').modal('hide')
+                }).fail(function (data) {
+                    console.log('fail');
+                });
             });
         })
+
+       function reloadTodoTable() {
+           todoTable.ajax.url("/api/tasks").load();
+       }
+
     </script>
 @endsection

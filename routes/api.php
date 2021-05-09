@@ -20,4 +20,5 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 
-Route::get('/items', [TodoController::class, 'index']);
+Route::get('/tasks', [TodoController::class, 'index']);
+Route::post('/task', [TodoController::class, 'store']);
