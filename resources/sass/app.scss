@@ -1,5 +1,7 @@
 // Fonts
 @import url('https://fonts.googleapis.com/css?family=Nunito');
+@import '~@fortawesome/fontawesome-free/scss/solid';
+@import '~@fortawesome/fontawesome-free/scss/fontawesome';
 
 // Variables
 @import 'variables';
@@ -10,3 +12,8 @@
 // Datatables - Bootstrap 4
 @import '~datatables.net-bs4/css/dataTables.bootstrap4.css';
 
+table {
+    td, th {
+        vertical-align: middle!important;
+    }
+}
