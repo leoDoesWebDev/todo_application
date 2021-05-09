@@ -51,3 +51,13 @@ require('datatables.net-bs4');
  */
 
 window.moment = require('moment');
+
+
+/**
+ * Load the toastr library and set some defaults
+ */
+
+window.toastr = require('toastr');
+window.toastr.options.closeButton = true;
+window.toastr.options.timeOut = 3000;
+window.toastr.options.progressBar = true;
