@@ -23,6 +23,7 @@
     },
     "dependencies": {
         "@fortawesome/fontawesome-free": "^5.15.3",
-        "datatables.net-bs4": "^1.10.24"
+        "datatables.net-bs4": "^1.10.24",
+        "moment": "^2.29.1"
     }
 }
