@@ -44,3 +44,10 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
  * Load datatables library
  */
 require('datatables.net-bs4');
+
+
+/**
+ * Load Moment.js library
+ */
+
+window.moment = require('moment');
