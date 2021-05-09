@@ -66,6 +66,51 @@
        const today = moment().format('Y-MM-DD');
 
        let todoTable = $('#todo_table').DataTable({
+           responsive: true,
+           columnDefs: [
+               {
+                   targets: 1,
+                   className: "text-truncate"
+               },
+               {
+                   targets: 2,
+                   className: "text-center"
+               },
+               {
+                   targets: 3,
+                   className: "text-center",
+                   render: function (data, type, row, meta) {
+                       let checked = '';
+
+                       if (data == '1') {
+                           checked = 'checked="checked"';
+                       }
+
+                       if (type === 'display') {
+                           return '<input id="task_' + data.id + '" type="checkbox" class="task-status" data-id="' + data.id + '" ' + checked + '>';
+                       } else {
+                           return data;
+                       }
+                   }
+               },
+               {
+                   targets: 4,
+                   className: "text-right",
+                   render: function (data, type, row, meta) {
+                       let html = '';
+                       html += '<button type="button" class="btn btn-info text-white action-button edit mr-2" data-id="' + data.id + '" title="Edit Entry"><i class="fa fa-eye"></i></button>';
+                       html += '<button type="button" class="btn btn-secondary text-white action-button view mr-2" data-id="' + data.id + '" title="Edit Entry"><i class="fa fa-edit"></i></button>';
+                       html += '<button type="button" class="btn btn-danger text-white action-button delete mr-2" data-id="' + data.id + '" title="Edit Entry"><i class="fa fa-trash"></i></button>';
+
+                       if (type === 'display') {
+                           return html;
+                       } else {
+                           return data;
+                       }
+
+                   }
+               }
+           ],
            "ajax": {
                "url": "/api/tasks",
                "dataSrc": ""
