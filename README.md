@@ -1,6 +1,6 @@
 To run locally:
 1. Create new local db
-2. In /todo_application, rename .env.example & to .env
+2. In /todo_application, rename .env.example to .env
 3. Enter local db credentials in .env 
 4. Run Composer install
 5. Run php artisan migrate:fresh
